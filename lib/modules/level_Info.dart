@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class level {
+class Level {
   final String title;
   final String? subtitle;
   final String? description;
@@ -8,7 +8,7 @@ class level {
   final IconData? icon;
   final List<Color> colors;
   final String routeName;
-  level({
+  Level({
     required this.title,
     required this.subtitle,
     this.description,
