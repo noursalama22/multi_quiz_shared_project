@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:multi_quiz_s_t_tt9/constants.dart';
 import 'package:multi_quiz_s_t_tt9/pages/level_describtion.dart';
-import 'package:multi_quiz_s_t_tt9/pages/multiple_q_screen.dart';
 import 'package:multi_quiz_s_t_tt9/widgets/my_outline_btn.dart';
 
 import '../modules/level_Info.dart';
@@ -22,7 +21,7 @@ class _HomePageState extends State<HomePage> {
         subtitle: "Level 1",
         description: "true or false quiz",
         icon: Icons.check,
-        image: "assets/images/ballon-s.png",
+        image: "assets/images/bags.png",
         colors: [kL1, kL12],
         routeName: '/level1'),
     Level(
@@ -31,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         colors: [kL2, kL22],
         routeName: '/level2',
         icon: Icons.play_arrow,
-        image: "assets/images/ballon-b.png",
+        image: "assets/images/ballon-s.png",
         description: "multible choice")
   ];
 
@@ -65,18 +64,55 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.builder(
-            itemCount: mylevel.length,
-            itemBuilder: (BuildContext context, int index) {
-              return MyLevelWidget(
-                function: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return LevelDescription();
-                  }));
-                },
-                level: mylevel[index],
-              );
-            }),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Let\'s Play',
+              style: TextStyle(
+                fontSize: 32,
+                color: kRedFont,
+                fontWeight: FontWeight.bold,
+                fontFamily: kFontFamily,
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              'Be the First!',
+              style: TextStyle(
+                fontSize: 18,
+                color: kGreyFont,
+                fontFamily: kFontFamily,
+              ),
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: mylevel.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return MyLevelWidget(
+                    function: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return LevelDescription(
+                          level: mylevel[index],
+                          onpress_btn: () {
+                            Navigator.pushNamed(
+                                context, mylevel[index].routeName);
+                          },
+                        );
+                      }));
+                    },
+                    level: mylevel[index],
+                  );
+                }),
+          ],
+        ),
       )),
     );
   }

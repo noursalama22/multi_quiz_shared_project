@@ -1,108 +1,106 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_quiz_s_t_tt9/pages/true_false_q_screen.dart';
+import 'package:multi_quiz_s_t_tt9/modules/level_Info.dart';
 
 import '../constants.dart';
 import '../widgets/my_outline_btn.dart';
-import 'multiple_q_screen.dart';
 
 class LevelDescription extends StatelessWidget {
-  const LevelDescription({Key? key}) : super(key: key);
+  final Level level;
+  final Function() onpress_btn;
+  const LevelDescription(
+      {Key? key, required this.level, required this.onpress_btn})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var questionNumber = 5;
-    var questionsCount = 10;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              kBlueBg,
-              kL2,
-            ],
+            colors: level.colors,
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 74, left: 24, right: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 44,
-                    width: 44,
-                    child: MYOutlineBtn(
-                      icon: Icons.close,
-                      iconColor: Colors.white,
-                      bColor: Colors.white,
-                      function: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+            padding: const EdgeInsets.only(top: 74, left: 24, right: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    MYOutlineBtn(
+                        icon: Icons.close,
+                        function: () {
+                          Navigator.pop(context);
+                        },
+                        bColor: Colors.white,
+                        iconColor: Colors.white),
+                  ],
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                Expanded(
+                  child: Center(
+                    child: Image.asset(level.image!),
                   ),
-                ],
-              ),
-              Expanded(
-                flex: 3,
-                child: Center(
-                  child: Image.asset('assets/images/ballon-b.png'),
                 ),
-              ),
-              Text(
-                'question $questionNumber of $questionsCount',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Sf-Pro-Text',
-                  color: Colors.white60,
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                'In Which City of Germany Is the Largest Port?',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontFamily: 'Sf-Pro-Text',
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'question  dhjvajak jklfsakljvabvjkfabjsk \n cdklbvcjksabcddhsaj',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Sf-Pro-Text',
-                  color: Colors.white60,
-                ),
-              ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TrueFalseQuiz(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      level.subtitle!,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Sf-Pro-Text',
+                        color: Colors.white60,
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  ),
-                  child: Expanded(
-                    child: Center(
-                      child: Text(
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      level.title,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Sf-Pro-Text',
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      level.description!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Sf-Pro-Text',
+                        color: Colors.white60,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 60,
+                ),
+                Material(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      onpress_btn();
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(16),
+                      child: const Text(
                         'Game',
                         style: TextStyle(
                             color: kL2,
@@ -112,11 +110,11 @@ class LevelDescription extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              Spacer()
-            ],
-          ),
-        ),
+                const SizedBox(
+                  height: 120,
+                )
+              ],
+            )),
       ),
     );
   }
