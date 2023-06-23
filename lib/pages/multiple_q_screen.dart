@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:multi_quiz_s_t_tt9/modules/multipe_choice/quizBrainMultiple.dart';
+import 'package:multi_quiz_s_t_tt9/modules/true_false/quizBrain.dart';
 import 'package:multi_quiz_s_t_tt9/pages/home.dart';
 import 'package:multi_quiz_s_t_tt9/widgets/my_outline_btn.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../constants.dart';
 
@@ -12,6 +17,103 @@ class MultiQScreen extends StatefulWidget {
 }
 
 class _MultiQScreenState extends State<MultiQScreen> {
+  QuizBrainMulti quizBrain = QuizBrainMulti();
+  List<Icon> scoreKeeper = [];
+  int counter = 10;
+  bool? isCorrect;
+  int? userChoice;
+  late Timer timer;
+
+  void checkAnswer() {
+    int correctAnswer = quizBrain.getQuestionAnswer();
+    cancelTimer();
+    setState(() {
+      if (correctAnswer == userChoice) {
+        isCorrect = true;
+        scoreKeeper.add(
+          const Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      } else {
+        isCorrect = false;
+        scoreKeeper.add(
+          const Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+      }
+    });
+
+    if (quizBrain.isFinished()) {
+      cancelTimer();
+
+      Timer(Duration(seconds: 1), () {
+        alertFinished();
+        setState(() {
+          quizBrain.reset();
+          scoreKeeper.clear();
+          isCorrect = null;
+          counter = 10;
+        });
+      });
+    }
+  }
+
+  void next() {
+    if (quizBrain.isFinished()) {
+      cancelTimer();
+      alertFinished();
+    } else {
+      counter = 10;
+      startTimer();
+    }
+    setState(() {
+      isCorrect = null;
+      userChoice = null;
+      quizBrain.nextQuestion();
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        counter--;
+      });
+      if (counter == 0) {
+        timer.cancel();
+      }
+    });
+  }
+
+  void cancelTimer() {
+    timer.cancel();
+  }
+
+  void alertFinished() {
+    Alert(
+      context: context,
+      title: 'Finished',
+      desc: "you are done",
+      buttons: [
+        DialogButton(
+            child: Text('Finished'),
+            onPressed: () {
+              //Navigator.pushAndRemoveUntil(context, '/', (route) => false);
+            }),
+      ],
+    ).show();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    startTimer();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var questionNumber = 5;
@@ -44,9 +146,6 @@ class _MultiQScreenState extends State<MultiQScreen> {
                       iconColor: Colors.white,
                       bColor: Colors.white,
                       function: () {
-                        // Navigator.pop(context);
-                        // Navigator.pop(context);
-
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -57,35 +156,6 @@ class _MultiQScreenState extends State<MultiQScreen> {
                       },
                     ),
                   ),
-                  // OutlinedButton(
-                  //   onPressed: () {},
-                  //   style: ButtonStyle().copyWith(
-                  //     shape: MaterialStatePropertyAll(
-                  //       RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(25),
-                  //       ),
-                  //     ),
-                  //     side: MaterialStatePropertyAll(
-                  //       BorderSide(color: Colors.white),
-                  //     ),
-                  //   ),
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(
-                  //         Icons.favorite,
-                  //         color: Colors.white,
-                  //       ),
-                  //       SizedBox(
-                  //         width: 8,
-                  //       ),
-                  //       const Text(
-                  //         '3',
-                  //         style: TextStyle(color: Colors.white),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -99,7 +169,7 @@ class _MultiQScreenState extends State<MultiQScreen> {
                         ),
                       ),
                       Text(
-                        '05',
+                        counter.toString(),
                         style: TextStyle(
                           fontFamily: 'Sf-Pro-Text',
                           fontSize: 24,
@@ -109,7 +179,6 @@ class _MultiQScreenState extends State<MultiQScreen> {
                       )
                     ],
                   ),
-
                   OutlinedButton(
                     onPressed: () {},
                     child: Icon(
@@ -187,40 +256,51 @@ class _MultiQScreenState extends State<MultiQScreen> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Bremen',
-                            style: TextStyle(
-                                color: kL2,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18),
-                          ),
+              ListView.builder(
+                itemCount: quizBrain.getOptions().length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ElevatedButton(
+                      onPressed: userChoice == null
+                          ? () {
+                              userChoice = index;
+                              checkAnswer();
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        //disabledBackgroundColor: isCorrect == null?Colors.white60:,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       ),
-                      Icon(
-                        Icons.check_rounded,
-                        color: kL2,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 24,
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                'Bremen',
+                                style: TextStyle(
+                                    color: kL2,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18),
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.check_rounded,
+                            color: kL2,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
