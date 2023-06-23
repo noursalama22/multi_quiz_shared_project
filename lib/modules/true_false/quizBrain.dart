@@ -17,6 +17,13 @@ class QuizBrain {
       true,
     ),
   ];
+  int getQuestiosNumber() {
+    return _questionBank.length;
+  }
+
+  int getCurrentQNumber() {
+    return _questionNumber + 1;
+  }
 
   String getQuestionText() {
     return _questionBank[_questionNumber].questionText;

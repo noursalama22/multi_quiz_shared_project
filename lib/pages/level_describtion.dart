@@ -6,10 +6,7 @@ import '../widgets/my_outline_btn.dart';
 
 class LevelDescription extends StatelessWidget {
   final Level level;
-  final Function() onpress_btn;
-  const LevelDescription(
-      {Key? key, required this.level, required this.onpress_btn})
-      : super(key: key);
+  const LevelDescription({Key? key, required this.level}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +90,7 @@ class LevelDescription extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
                     onTap: () {
-                      onpress_btn();
+                      Navigator.pushNamed(context, level.routeName);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -101,7 +98,7 @@ class LevelDescription extends StatelessWidget {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),
                       child: const Text(
-                        'Game',
+                        'Play Now',
                         style: TextStyle(
                             color: kL2,
                             fontWeight: FontWeight.w500,

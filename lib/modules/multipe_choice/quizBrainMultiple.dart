@@ -16,6 +16,14 @@ class QuizBrainMulti {
     return _questionBank[_questionNumber].questionText;
   }
 
+  int getQuestiosNumber() {
+    return _questionBank.length;
+  }
+
+  int getCurrentQNumber() {
+    return _questionNumber + 1;
+  }
+
   int getQuestionAnswer() {
     return _questionBank[_questionNumber].questionAnswer;
   }

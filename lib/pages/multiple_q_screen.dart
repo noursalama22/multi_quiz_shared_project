@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:multi_quiz_s_t_tt9/modules/multipe_choice/quizBrainMultiple.dart';
-import 'package:multi_quiz_s_t_tt9/modules/true_false/quizBrain.dart';
 import 'package:multi_quiz_s_t_tt9/pages/home.dart';
 import 'package:multi_quiz_s_t_tt9/widgets/my_outline_btn.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -19,23 +19,45 @@ class MultiQScreen extends StatefulWidget {
 class _MultiQScreenState extends State<MultiQScreen> {
   QuizBrainMulti quizBrain = QuizBrainMulti();
   List<Icon> scoreKeeper = [];
+  int score = 0;
   int counter = 10;
   bool? isCorrect;
   int? userChoice;
   late Timer timer;
+  Color favColor = Colors.white;
+  double favScal = 1;
+
+  final player = AudioPlayer(); // Create a player
 
   void checkAnswer() {
     int correctAnswer = quizBrain.getQuestionAnswer();
     cancelTimer();
     setState(() {
       if (correctAnswer == userChoice) {
+        score++;
+        print('Score $score');
         isCorrect = true;
-        scoreKeeper.add(
-          const Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        );
+        setState(() {
+          favColor = Colors.red;
+          favScal = 1.5;
+          Timer(Duration(seconds: 1), () {
+            setState(() {
+              favScal = 1;
+            });
+          });
+          Timer(Duration(seconds: 2), () {
+            setState(() {
+              favColor = Colors.white;
+            });
+          });
+
+          scoreKeeper.add(
+            const Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          );
+        });
       } else {
         isCorrect = false;
         scoreKeeper.add(
@@ -47,10 +69,26 @@ class _MultiQScreenState extends State<MultiQScreen> {
       }
     });
 
+    // if (quizBrain.isFinished()) {
+    //   cancelTimer();
+    //
+    //   Timer(Duration(seconds: 1), () {
+    //     alertFinished();
+    //     setState(() {
+    //       quizBrain.reset();
+    //       scoreKeeper.clear();
+    //       isCorrect = null;
+    //       counter = 10;
+    //     });
+    //   });
+    // }
+  }
+
+  void next() {
     if (quizBrain.isFinished()) {
       cancelTimer();
-
-      Timer(Duration(seconds: 1), () {
+      // alertFinished();
+      Timer(const Duration(seconds: 1), () {
         alertFinished();
         setState(() {
           quizBrain.reset();
@@ -59,13 +97,6 @@ class _MultiQScreenState extends State<MultiQScreen> {
           counter = 10;
         });
       });
-    }
-  }
-
-  void next() {
-    if (quizBrain.isFinished()) {
-      cancelTimer();
-      alertFinished();
     } else {
       counter = 10;
       startTimer();
@@ -78,12 +109,24 @@ class _MultiQScreenState extends State<MultiQScreen> {
   }
 
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       setState(() {
         counter--;
       });
-      if (counter == 0) {
+      if (counter == 5) {
+        final duration = await player.setUrl( // Load a URL
+            'assets/sound/tick_tock.mp3'); // Schemes: (https: | file: | asset: )
+        player.play();
+      }
+      if (counter == 0 && userChoice == null) {
         timer.cancel();
+        setState(() {
+          scoreKeeper.add(Icon(
+            Icons.question_mark,
+            color: Colors.white,
+          ));
+        });
+        next();
       }
     });
   }
@@ -95,14 +138,22 @@ class _MultiQScreenState extends State<MultiQScreen> {
   void alertFinished() {
     Alert(
       context: context,
-      title: 'Finished',
-      desc: "you are done",
+      title: 'Your Score',
+      desc: "$score/${quizBrain.getQuestiosNumber()}",
       buttons: [
         DialogButton(
-            child: Text('Finished'),
+            child: const Text('Finish'),
             onPressed: () {
-              //Navigator.pushAndRemoveUntil(context, '/', (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/home_screen', (route) => false);
             }),
+        DialogButton(
+          child: const Text('Play Again'),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
       ],
     ).show();
   }
@@ -116,11 +167,9 @@ class _MultiQScreenState extends State<MultiQScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var questionNumber = 5;
-    var questionsCount = 10;
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
               kBlueBg,
@@ -131,9 +180,10 @@ class _MultiQScreenState extends State<MultiQScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 74, left: 24, right: 24),
+          padding: const EdgeInsets.only(top: 60, left: 24, right: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,7 +199,7 @@ class _MultiQScreenState extends State<MultiQScreen> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomePage(),
+                            builder: (context) => const HomePage(),
                           ),
                           (route) => false,
                         );
@@ -163,8 +213,8 @@ class _MultiQScreenState extends State<MultiQScreen> {
                         height: 56,
                         width: 56,
                         child: CircularProgressIndicator(
-                          value: 0.7,
-                          color: Colors.white,
+                          value: counter / 10,
+                          color: counter >= 5 ? Colors.white : Colors.redAccent,
                           backgroundColor: Colors.white12,
                         ),
                       ),
@@ -173,7 +223,7 @@ class _MultiQScreenState extends State<MultiQScreen> {
                         style: TextStyle(
                           fontFamily: 'Sf-Pro-Text',
                           fontSize: 24,
-                          color: Colors.white,
+                          color: counter >= 5 ? Colors.white : Colors.redAccent,
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -181,17 +231,24 @@ class _MultiQScreenState extends State<MultiQScreen> {
                   ),
                   OutlinedButton(
                     onPressed: () {},
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.white,
+                    child: AnimatedScale(
+                      scale: favScal,
+                      duration: Duration(seconds: 1),
+                      child: Icon(
+                        Icons.favorite,
+                        color: favColor,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        side: BorderSide(color: Colors.white)),
+                        side: const BorderSide(color: Colors.white)),
                   )
                 ],
+              ),
+              const SizedBox(
+                height: 16,
               ),
               Expanded(
                 child: Center(
@@ -199,146 +256,192 @@ class _MultiQScreenState extends State<MultiQScreen> {
                 ),
               ),
               Text(
-                'question $questionNumber of $questionsCount',
-                style: TextStyle(
+                'question ${quizBrain.getCurrentQNumber()} of ${quizBrain.getQuestiosNumber()}',
+                style: const TextStyle(
                   fontSize: 18,
                   fontFamily: 'Sf-Pro-Text',
                   color: Colors.white60,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               Text(
-                'In Which City of Germany Is the Largest Port?',
-                style: TextStyle(
-                  fontSize: 32,
+                '${quizBrain.getQuestionText()}',
+                style: const TextStyle(
+                  fontSize: 30,
                   fontFamily: 'Sf-Pro-Text',
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(
-                height: 48,
+                height: 20,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Bremen',
-                            style: TextStyle(
-                                color: kL2,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18),
+
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 12),
+              //   child: ElevatedButton(
+              //     onPressed: () {},
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.white,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(15),
+              //       ),
+              //       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         SizedBox(
+              //           width: 24,
+              //         ),
+              //         Expanded(
+              //           child: Center(
+              //             child: Text(
+              //               'Bremen',
+              //               style: TextStyle(
+              //                   color: kL2,
+              //                   fontWeight: FontWeight.w500,
+              //                   fontSize: 18),
+              //             ),
+              //           ),
+              //         ),
+              //         Icon(
+              //           Icons.check_rounded,
+              //           color: kL2,
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: quizBrain.getOptions().length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: ElevatedButton(
+                        onPressed: userChoice == null
+                            ? () {
+                                print("Index:$index");
+                                userChoice = index;
+                                checkAnswer();
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(0, 60),
+                          disabledBackgroundColor: userChoice != null
+                              ? (isCorrect! && userChoice == index)
+                                  ? Colors.lightGreen
+                                  : userChoice == index
+                                      ? Colors.red
+                                      : Colors.white54
+                              : Colors.white,
+                          backgroundColor: userChoice != null
+                              ? (isCorrect! && userChoice == index)
+                                  ? Colors.lightGreen
+                                  : userChoice == index
+                                      ? Colors.red
+                                      : Colors.white
+                              : Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
                         ),
-                      ),
-                      Icon(
-                        Icons.check_rounded,
-                        color: kL2,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ListView.builder(
-                itemCount: quizBrain.getOptions().length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: ElevatedButton(
-                      onPressed: userChoice == null
-                          ? () {
-                              userChoice = index;
-                              checkAnswer();
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        //disabledBackgroundColor: isCorrect == null?Colors.white60:,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 24,
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Bremen',
-                                style: TextStyle(
-                                    color: kL2,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 24,
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  quizBrain.getOptions()[index],
+                                  style: TextStyle(
+                                      color: userChoice != null
+                                          ? userChoice == index
+                                              ? Colors.white
+                                              : kL2
+                                          : kL2,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20),
+                                ),
                               ),
                             ),
-                          ),
-                          Icon(
-                            Icons.check_rounded,
-                            color: kL2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kG1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Gaza',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18),
-                          ),
+                            Icon(
+                              userChoice == null
+                                  ? null
+                                  : isCorrect! && userChoice == index
+                                      ? Icons.check
+                                      : userChoice == index
+                                          ? Icons.close
+                                          : null,
+                              color: userChoice != null
+                                  ? userChoice == index
+                                      ? Colors.white
+                                      : null
+                                  : null,
+                            ),
+                          ],
                         ),
                       ),
-                      Icon(
-                        Icons.check_rounded,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
-              SizedBox(
-                height: 48,
+              Row(
+                children: scoreKeeper,
+              ),
+              TextButton(
+                onPressed: () {
+                  print('Next Pressed');
+                  next();
+                },
+                child: Text(
+                  userChoice != null ? 'Next' : '',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 12),
+              //   child: ElevatedButton(
+              //     onPressed: () {},
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: kG1,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(15),
+              //       ),
+              //       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         SizedBox(
+              //           width: 24,
+              //         ),
+              //         Expanded(
+              //           child: Center(
+              //             child: Text(
+              //               'Gaza',
+              //               style: TextStyle(
+              //                   color: Colors.white,
+              //                   fontWeight: FontWeight.w500,
+              //                   fontSize: 18),
+              //             ),
+              //           ),
+              //         ),
+              //         Icon(
+              //           Icons.check_rounded,
+              //           color: Colors.white,
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              const SizedBox(
+                height: 16,
               ),
             ],
           ),

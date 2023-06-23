@@ -31,7 +31,15 @@ class _HomePageState extends State<HomePage> {
         routeName: '/level2',
         icon: Icons.play_arrow,
         image: "assets/images/ballon-s.png",
-        description: "multible choice")
+        description: "multible choice"),
+    // Level(
+    //     title: "Multiple choice",
+    //     subtitle: "Level 2",
+    //     colors: [kL2, kL22],
+    //     routeName: '/level2',
+    //     icon: Icons.play_arrow,
+    //     image: "assets/images/ballon-s.png",
+    //     description: "multible choice"),
   ];
 
   @override
@@ -56,18 +64,17 @@ class _HomePageState extends State<HomePage> {
               function: () {
                 print("2222");
               }),
-          SizedBox(
+          const SizedBox(
             width: 16,
           )
         ],
       ),
-      body: SingleChildScrollView(
-          child: Padding(
+      body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Let\'s Play',
               style: TextStyle(
                 fontSize: 32,
@@ -76,10 +83,10 @@ class _HomePageState extends State<HomePage> {
                 fontFamily: kFontFamily,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
-            Text(
+            const Text(
               'Be the First!',
               style: TextStyle(
                 fontSize: 18,
@@ -87,33 +94,31 @@ class _HomePageState extends State<HomePage> {
                 fontFamily: kFontFamily,
               ),
             ),
-            SizedBox(
-              height: 24,
+            const SizedBox(
+              height: 16,
             ),
-            ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: mylevel.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return MyLevelWidget(
-                    function: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return LevelDescription(
-                          level: mylevel[index],
-                          onpress_btn: () {
-                            Navigator.pushNamed(
-                                context, mylevel[index].routeName);
-                          },
-                        );
-                      }));
-                    },
-                    level: mylevel[index],
-                  );
-                }),
+            Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  // physics: const NeverScrollableScrollPhysics(),
+                  itemCount: mylevel.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return MyLevelWidget(
+                      function: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return LevelDescription(
+                            level: mylevel[index],
+                          );
+                        }));
+                      },
+                      level: mylevel[index],
+                    );
+                  }),
+            ),
           ],
         ),
-      )),
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../constants.dart';
 import '../modules/true_false/quizBrain.dart';
@@ -8,32 +10,57 @@ import '../widgets/my_outline_btn.dart';
 import 'home.dart';
 
 class TrueFalseQuiz extends StatefulWidget {
+  const TrueFalseQuiz({super.key});
+
   @override
   _TrueFalseQuizState createState() => _TrueFalseQuizState();
 }
 
 class _TrueFalseQuizState extends State<TrueFalseQuiz> {
   QuizBrain quizBrain = QuizBrain();
-
+  final player = AudioPlayer(); //
   List<Icon> scoreKeeper = [];
-
-  int? _choice;
-
+  int score = 0;
   int counter = 10;
+  bool? isCorrect;
+  bool? userChoice;
+  late Timer timer;
+  Color favColor = Colors.white;
+  double favScal = 1;
 
-  void checkAnswer(bool userChoice) {
+  void checkAnswer() {
     bool correctAnswer = quizBrain.getQuestionAnswer();
+    cancelTimer();
     setState(() {
       if (correctAnswer == userChoice) {
-        scoreKeeper.add(
-          Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        );
+        score++;
+        print('Score $score');
+        isCorrect = true;
+        setState(() {
+          favColor = Colors.red;
+          favScal = 1.5;
+          Timer(const Duration(seconds: 1), () {
+            setState(() {
+              favScal = 1;
+            });
+          });
+          Timer(const Duration(seconds: 2), () {
+            setState(() {
+              favColor = Colors.white;
+            });
+          });
+
+          scoreKeeper.add(
+            const Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          );
+        });
       } else {
+        isCorrect = false;
         scoreKeeper.add(
-          Icon(
+          const Icon(
             Icons.close,
             color: Colors.red,
           ),
@@ -41,47 +68,105 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
       }
     });
 
-    if (quizBrain.isFinished()) {
-      print('finished');
+    // if (quizBrain.isFinished()) {
+    //   cancelTimer();
+    //
+    //   Timer(Duration(seconds: 1), () {
+    //     alertFinished();
+    //     setState(() {
+    //       quizBrain.reset();
+    //       scoreKeeper.clear();
+    //       isCorrect = null;
+    //       counter = 10;
+    //     });
+    //   });
+    // }
+  }
 
-      Timer(Duration(seconds: 1), () {
-        // Alert(context: context, title: "Finished", desc: "you are done").show();
+  void next() {
+    if (quizBrain.isFinished()) {
+      cancelTimer();
+      // alertFinished();
+      Timer(const Duration(seconds: 1), () {
+        alertFinished();
         setState(() {
           quizBrain.reset();
           scoreKeeper.clear();
+          isCorrect = null;
+          counter = 10;
         });
       });
     } else {
-      quizBrain.nextQuestion();
+      counter = 10;
+      startTimer();
     }
+    setState(() {
+      isCorrect = null;
+      userChoice = null;
+      quizBrain.nextQuestion();
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      setState(() {
+        counter--;
+      });
+      if (counter == 5) {
+        final duration = await player.setUrl(// Load a URL
+            'assets/sound/tick_tock.mp3'); // Schemes: (https: | file: | asset: )
+        player.play();
+      }
+      if (counter == 0 && userChoice == null) {
+        timer.cancel();
+        setState(() {
+          scoreKeeper.add(const Icon(
+            Icons.question_mark,
+            color: Colors.white,
+          ));
+        });
+        next();
+      }
+    });
+  }
+
+  void cancelTimer() {
+    timer.cancel();
+  }
+
+  void alertFinished() {
+    Alert(
+      context: context,
+      title: 'Your Score',
+      desc: "$score/${quizBrain.getQuestiosNumber()}",
+      buttons: [
+        DialogButton(
+            child: const Text('Finish'),
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/home_screen', (route) => false);
+            }),
+        DialogButton(
+          child: const Text('Play Again'),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
   }
 
   @override
   void initState() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        counter--;
-      });
-      if (counter == 0) {
-        // timer.cancel();
-        counter = 10;
-        quizBrain.nextQuestion();
-      }
-      ;
-    });
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
               kBlueBg,
@@ -114,7 +199,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomePage(),
+                            builder: (context) => const HomePage(),
                           ),
                           (route) => false,
                         );
@@ -135,7 +220,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                       ),
                       Text(
                         counter.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Sf-Pro-Text',
                           fontSize: 24,
                           color: Colors.white,
@@ -146,7 +231,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                   ),
                   OutlinedButton(
                     onPressed: () {},
-                    child: Icon(
+                    child: const Icon(
                       Icons.favorite,
                       color: Colors.white,
                     ),
@@ -154,19 +239,19 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        side: BorderSide(color: Colors.white)),
+                        side: const BorderSide(color: Colors.white)),
                   )
                 ],
               ),
               Expanded(
                 flex: 5,
                 child: Padding(
-                  padding: EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Center(
                     child: Text(
                       quizBrain.getQuestionText(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 25.0,
                         color: Colors.white,
                       ),
@@ -176,12 +261,12 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
-                    style: ButtonStyle(
+                    style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(Colors.green),
                     ),
-                    child: Text(
+                    child: const Text(
                       'True',
                       style: TextStyle(
                         color: Colors.white,
@@ -190,19 +275,20 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                     ),
                     onPressed: () {
                       //The user picked true.
-                      checkAnswer(true);
+                      userChoice = true;
+                      checkAnswer();
                     },
                   ),
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
-                    style: ButtonStyle().copyWith(
+                    style: const ButtonStyle().copyWith(
                       backgroundColor: MaterialStatePropertyAll(Colors.red),
                     ),
-                    child: Text(
+                    child: const Text(
                       'False',
                       style: TextStyle(
                         fontSize: 20.0,
@@ -211,7 +297,8 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                     ),
                     onPressed: () {
                       //The user picked false.
-                      checkAnswer(false);
+                      userChoice = false;
+                      checkAnswer();
                     },
                   ),
                 ),
@@ -219,7 +306,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
               Wrap(
                 children: scoreKeeper,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 72,
               )
             ],
