@@ -35,16 +35,6 @@ class _LaunchScreenState extends State<LaunchScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 250.0),
-              //   child: Opacity(
-              //     opacity: 0.2,
-              //     child: Image(
-              //       image: AssetImage('assets/images/bubble1.png'),
-              //       fit: BoxFit.fitHeight,
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.only(top: 100.0),
                 child: Column(
@@ -64,7 +54,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
                             // decorationStyle: TextDecorationStyle.double,
                             // decoration: TextDecoration.underline,
                             // decorationColor: kL2,
-                            fontSize: 50,
+                            fontSize: 60,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
@@ -81,7 +71,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
                           // decorationStyle: TextDecorationStyle.double,
                           // decoration: TextDecoration.underline,
                           // decorationColor: kL2,
-                          fontSize: 50,
+                          fontSize: 60,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
@@ -91,7 +81,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
+                              borderRadius: BorderRadius.circular(16)),
                           backgroundColor: ky1,
                           padding: const EdgeInsets.symmetric(
                               vertical: 16, horizontal: 80),

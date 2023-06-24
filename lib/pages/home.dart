@@ -17,21 +17,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Level> mylevel = [
     Level(
-        title: "true or false",
+        title: "True or False",
         subtitle: "Level 1",
-        description: "true or false quiz",
+        description:
+            "Do you feel exciting? Here you\'ll challenge one of our most easy  true-false questions!",
         icon: Icons.check,
         image: "assets/images/bags.png",
         colors: [kL1, kL12],
         routeName: '/level1'),
     Level(
-        title: "Multiple choice",
+        title: "Multiple Choice",
         subtitle: "Level 2",
         colors: [kL2, kL22],
         routeName: '/level2',
         icon: Icons.play_arrow,
         image: "assets/images/ballon-s.png",
-        description: "multible choice"),
+        description:
+            "Do you feel confident? Here you\'ll challenge one of our most difficult muliple choice questions!"),
     // Level(
     //     title: "Multiple choice",
     //     subtitle: "Level 2",
@@ -51,22 +53,22 @@ class _HomePageState extends State<HomePage> {
         actions: [
           MYOutlineBtn(
             icon: Icons.favorite,
+            function: () {},
+            bColor: kGreyFont.withOpacity(0.4),
             iconColor: kBlueIcon,
-            bColor: kGreyFont.withOpacity(0.5),
-            function: () {
-              print("11111");
-            },
+          ),
+          SizedBox(
+            width: 8,
           ),
           MYOutlineBtn(
-              icon: Icons.person,
-              iconColor: kBlueIcon,
-              bColor: kGreyFont.withOpacity(0.5),
-              function: () {
-                print("2222");
-              }),
-          const SizedBox(
+            icon: Icons.person,
+            function: () {},
+            bColor: kGreyFont.withOpacity(0.4),
+            iconColor: kBlueIcon,
+          ),
+          SizedBox(
             width: 16,
-          )
+          ),
         ],
       ),
       body: Padding(

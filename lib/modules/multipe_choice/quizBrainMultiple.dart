@@ -5,11 +5,21 @@ class QuizBrainMulti {
 
   final List<QuestionMultiple> _questionBank = [
     QuestionMultiple('You can lead a cow down stairs but not up stairs.', 1,
-        ['always', 'never', 'sometimes']),
+        ['Always', 'Never', 'Sometimes']),
     QuestionMultiple(
-        'Approximately one quarter of human bones are in the feet.',
-        0,
-        ['agree', 'disagree', 'not sure']),
+      'Approximately one quarter of human bones are in the feet.',
+      0,
+      ['Agree', 'Disagree', 'Not sure'],
+    ),
+    QuestionMultiple('Which of these countries ISN’T landlocked?', 1,
+        ['Nepal', 'Turkey', 'Armenia']),
+    QuestionMultiple(
+        'Which two countries in South America are the Iguazu Falls part of?',
+        2, [
+      'Ethiopia and Kenya',
+      'Switzerland and Italy',
+      'Brazil and Argentina',
+    ]),
   ];
 
   String getQuestionText() {

@@ -11,6 +11,10 @@ const kL3 = Color(0xffa28dd0);
 const kL32 = Color(0xfff4bee7);
 const kBlueBg = Color(0xff3293f4);
 const kG1 = Color(0xffb5bd05);
+const kG2 = Color(0xffd0ea39);
+// const kG2 = Color(0xffb3d202);
 const ky1 = Color(0xffF0D701);
-
+const ky2 = Color(0xffB3BC07);
+const kr1 = Color(0xfff47681);
+const kr2 = Color(0xffe92b2b);
 const kFontFamily = 'Sf-Pro-Text';

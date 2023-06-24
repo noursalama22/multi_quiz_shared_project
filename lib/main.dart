@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/launch_screen',
       routes: {
-        '/home_screen': (context) => const HomePage(),
         '/launch_screen': (context) => const LaunchScreen(),
-        '/level1': (context) => TrueFalseQuiz(),
+        '/home_screen': (context) => const HomePage(),
+        '/level1': (context) => const TrueFalseQuiz(),
         '/level2': (context) => const MultiQScreen(),
         // '/description_screen': (context) => LevelDescription(level: level, onpress_btn: onpress_btn),
       },

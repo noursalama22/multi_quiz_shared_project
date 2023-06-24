@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:multi_quiz_s_t_tt9/modules/level_Info.dart';
 
-import '../constants.dart';
 import '../widgets/my_outline_btn.dart';
 
 class LevelDescription extends StatelessWidget {
@@ -15,12 +14,12 @@ class LevelDescription extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: level.colors,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
           ),
         ),
         child: Padding(
-            padding: const EdgeInsets.only(top: 74, left: 24, right: 24),
+            padding: const EdgeInsets.only(top: 56, left: 24, right: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -97,12 +96,13 @@ class LevelDescription extends StatelessWidget {
                       width: double.infinity,
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),
-                      child: const Text(
+                      child: Text(
                         'Play Now',
                         style: TextStyle(
-                            color: kL2,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18),
+                            // fontFamily: 'Sf-Pro-Text',
+                            color: level.colors[0],
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20),
                       ),
                     ),
                   ),

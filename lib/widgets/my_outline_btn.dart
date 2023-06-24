@@ -17,20 +17,24 @@ class MYOutlineBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: function,
-      child: Icon(
-        icon,
-        color: iconColor,
+    return SizedBox(
+      height: 44,
+      width: 44,
+      child: OutlinedButton(
+        onPressed: function,
+        child: Icon(
+          icon,
+          color: iconColor,
+        ),
+        style: ButtonStyle().copyWith(
+            shape: MaterialStatePropertyAll(
+              shapeBorder,
+            ),
+            side: MaterialStatePropertyAll(
+              BorderSide(color: bColor),
+            ),
+            padding: MaterialStatePropertyAll(EdgeInsets.all(8))),
       ),
-      style: ButtonStyle().copyWith(
-          shape: MaterialStatePropertyAll(
-            shapeBorder,
-          ),
-          side: MaterialStatePropertyAll(
-            BorderSide(color: bColor),
-          ),
-          padding: MaterialStatePropertyAll(EdgeInsets.all(8))),
     );
   }
 }
