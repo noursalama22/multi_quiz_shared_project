@@ -36,47 +36,54 @@ class _LaunchScreenState extends State<LaunchScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 100.0),
+                padding: const EdgeInsets.only(top: 150.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 30.0),
-                      child: Text(
-                        'Game',
-                        style: TextStyle(
-                            shadows: [
-                              Shadow(
-                                  color: Colors.white38,
-                                  offset: Offset(1, 5),
-                                  blurRadius: 5)
-                            ],
-                            // decorationStyle: TextDecorationStyle.double,
-                            // decoration: TextDecoration.underline,
-                            // decorationColor: kL2,
-                            fontSize: 60,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                    Padding(
+                      padding: const EdgeInsets.all(60.0),
+                      child: Image(
+                        image: AssetImage('assets/images/img.png'),
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    const Text(
-                      'Quiz',
-                      style: TextStyle(
-                          shadows: [
-                            Shadow(
-                                color: Colors.white38,
-                                offset: Offset(1, 5),
-                                blurRadius: 5)
-                          ],
-                          // decorationStyle: TextDecorationStyle.double,
-                          // decoration: TextDecoration.underline,
-                          // decorationColor: kL2,
-                          fontSize: 60,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
+                    // const Padding(
+                    //   padding: EdgeInsets.only(top: 30.0),
+                    //   child: Text(
+                    //     'Game',
+                    //     style: TextStyle(
+                    //         shadows: [
+                    //           Shadow(
+                    //               color: Colors.white38,
+                    //               offset: Offset(1, 5),
+                    //               blurRadius: 5)
+                    //         ],
+                    //         // decorationStyle: TextDecorationStyle.double,
+                    //         // decoration: TextDecoration.underline,
+                    //         // decorationColor: kL2,
+                    //         fontSize: 60,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: Colors.white),
+                    //   ),
+                    // ),
+                    // const Text(
+                    //   'Quiz',
+                    //   style: TextStyle(
+                    //       shadows: [
+                    //         Shadow(
+                    //             color: Colors.white38,
+                    //             offset: Offset(1, 5),
+                    //             blurRadius: 5)
+                    //       ],
+                    //       // decorationStyle: TextDecorationStyle.double,
+                    //       // decoration: TextDecoration.underline,
+                    //       // decorationColor: kL2,
+                    //       fontSize: 60,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white),
+                    // ),
                     const SizedBox(
-                      height: 150,
+                      height: 30,
                     ),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -93,9 +100,9 @@ class _LaunchScreenState extends State<LaunchScreen> {
                         child: const Text(
                           'Start',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.black87,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Sf-Pro-Text',
+                              // fontFamily: 'Sf-Pro-Text',
                               fontSize: 24),
                         )),
                   ],

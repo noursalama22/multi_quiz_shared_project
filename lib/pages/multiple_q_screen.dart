@@ -6,7 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:multi_quiz_s_t_tt9/modules/multipe_choice/quizBrainMultiple.dart';
 import 'package:multi_quiz_s_t_tt9/pages/home.dart';
 import 'package:multi_quiz_s_t_tt9/widgets/my_outline_btn.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../constants.dart';
 
@@ -28,7 +28,11 @@ class _MultiQScreenState extends State<MultiQScreen> {
   Color favColor = Colors.white;
   double favScal = 1;
 
-  final player = AudioPlayer(); // Create a player
+  final player = AudioPlayer();
+
+  bool counterFinished = false;
+
+  bool showCorrectAnswer = false; // Create a player
 
   void checkAnswer() {
     if (counter <= 5) {
@@ -75,26 +79,27 @@ class _MultiQScreenState extends State<MultiQScreen> {
       }
     });
 
-    if (quizBrain.isFinished()) {
-      cancelTimer();
-
-      Timer(Duration(seconds: 2), () {
-        alertFinished();
-        setState(() {
-          quizBrain.reset();
-          scoreKeeper.clear();
-          isCorrect = null;
-          userChoice = null;
-          counter = 10;
-        });
-      });
-    }
+    // if (quizBrain.isFinished()) {
+    //   cancelTimer();
+    //
+    //   Timer(Duration(seconds: 2), () {
+    //     alertFinished();
+    //     setState(() {
+    //       quizBrain.reset();
+    //       scoreKeeper.clear();
+    //       isCorrect = null;
+    //       userChoice = null;
+    //       counter = 10;
+    //     });
+    //   });
+    // }
   }
 
   void next() {
     if (quizBrain.isFinished()) {
       alertFinished();
       setState(() {
+        counterFinished = false;
         quizBrain.reset();
         scoreKeeper.clear();
         isCorrect = null;
@@ -102,6 +107,10 @@ class _MultiQScreenState extends State<MultiQScreen> {
         counter = 10;
       });
     } else {
+      setState(() {
+        counterFinished = false;
+        showCorrectAnswer = false;
+      });
       counter = 10;
       startTimer();
       setState(() {
@@ -123,6 +132,7 @@ class _MultiQScreenState extends State<MultiQScreen> {
         player.play();
       }
       if (counter == 0 && userChoice == null) {
+        counterFinished = true;
         player.stop();
         timer.cancel();
         setState(() {
@@ -131,7 +141,7 @@ class _MultiQScreenState extends State<MultiQScreen> {
             color: Colors.white,
           ));
         });
-        next();
+        // next();
       }
     });
   }
@@ -141,30 +151,52 @@ class _MultiQScreenState extends State<MultiQScreen> {
   }
 
   void alertFinished() {
-    Alert(
+    QuickAlert.show(
       context: context,
-      title: 'Your Score',
-      desc: "$score/${quizBrain.getQuestiosNumber()}",
-      closeFunction: () {
+      type: score < (quizBrain.getQuestiosNumber() / 2)
+          ? QuickAlertType.error
+          : QuickAlertType.success,
+      text: 'Your Score is $score/${quizBrain.getQuestiosNumber()}',
+      title: score < (quizBrain.getQuestiosNumber() / 2)
+          ? 'Good Luck!😞'
+          : 'Congratulations! 🎉',
+      confirmBtnText: 'Play Agin',
+      onConfirmBtnTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      onCancelBtnTap: () {
         Navigator.pushNamedAndRemoveUntil(
             context, '/home_screen', (route) => false);
       },
-      buttons: [
-        DialogButton(
-            child: const Text('Finish'),
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/home_screen', (route) => false);
-            }),
-        DialogButton(
-          child: const Text('Play Again'),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ).show();
+      showCancelBtn: true,
+      cancelBtnText: 'Finish',
+      confirmBtnColor: Colors.green,
+    );
+    // Alert(
+    //   context: context,
+    //   title: 'Your Score',
+    //   desc: "$score/${quizBrain.getQuestiosNumber()}",
+    //   closeFunction: () {
+    //     Navigator.pushNamedAndRemoveUntil(
+    //         context, '/home_screen', (route) => false);
+    //   },
+    //   buttons: [
+    //     DialogButton(
+    //         child: const Text('Finish'),
+    //         onPressed: () {
+    //           Navigator.pushNamedAndRemoveUntil(
+    //               context, '/home_screen', (route) => false);
+    //         }),
+    //     DialogButton(
+    //       child: const Text('Play Again'),
+    //       onPressed: () {
+    //         Navigator.pop(context);
+    //         Navigator.pop(context);
+    //       },
+    //     ),
+    //   ],
+    // ).show();
   }
 
   @override
@@ -172,6 +204,13 @@ class _MultiQScreenState extends State<MultiQScreen> {
     // TODO: implement initState
     startTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    player.stop();
+    super.dispose();
   }
 
   @override
@@ -342,13 +381,15 @@ class _MultiQScreenState extends State<MultiQScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: GestureDetector(
-                        onTap: userChoice == null
-                            ? () {
-                                print("Index:$index");
-                                userChoice = index;
-                                checkAnswer();
-                              }
-                            : null,
+                        onTap: counterFinished
+                            ? null
+                            : userChoice == null
+                                ? () {
+                                    print("Index:$index");
+                                    userChoice = index;
+                                    checkAnswer();
+                                  }
+                                : null,
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2),
                           width: double.infinity,
@@ -362,8 +403,20 @@ class _MultiQScreenState extends State<MultiQScreen> {
                                           ? [ky1, ky2]
                                           : userChoice == index
                                               ? [kr1, kr2]
-                                              : [Colors.white54, Colors.white54]
-                                      : [Colors.white, Colors.white],
+                                              : showCorrectAnswer &&
+                                                      quizBrain
+                                                              .getQuestionAnswer() ==
+                                                          index
+                                                  ? [ky1, ky2]
+                                                  : [
+                                                      Colors.white54,
+                                                      Colors.white54
+                                                    ]
+                                      : showCorrectAnswer &&
+                                              quizBrain.getQuestionAnswer() ==
+                                                  index
+                                          ? [ky1, ky2]
+                                          : [Colors.white, Colors.white],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter),
                               color: Colors.white),
@@ -480,21 +533,59 @@ class _MultiQScreenState extends State<MultiQScreen> {
               Wrap(
                 children: scoreKeeper,
               ),
-              Align(
-                alignment: AlignmentDirectional.bottomEnd,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    foregroundColor: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        showCorrectAnswer = true;
+                      });
+
+                      print(showCorrectAnswer);
+                    },
+                    child: Text(
+                      ((userChoice == null && counter == 0) ||
+                              (userChoice != null && !isCorrect!))
+                          ? 'Show Answer'
+                          : '',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          decoration: TextDecoration.underline),
+                    ),
                   ),
-                  onPressed: () {
-                    next();
-                  },
-                  child: Text(
-                    userChoice != null && !quizBrain.isFinished() ? 'Next' : '',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      next();
+                    },
+                    child: Text(
+                      (userChoice != null || userChoice == null && counter == 0)
+                          ? (userChoice == null &&
+                                      counter == 0 &&
+                                      quizBrain.isFinished() ||
+                                  (userChoice != null &&
+                                      quizBrain.isFinished()))
+                              ? 'Show Result'
+                              : 'Next'
+                          : '',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          decoration: TextDecoration.underline),
+                    ),
                   ),
-                ),
+                ],
               ),
               // Padding(
               //   padding: const EdgeInsets.only(bottom: 12),

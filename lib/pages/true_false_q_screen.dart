@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-//import 'package:just_audio/just_audio.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../constants.dart';
 import '../modules/true_false/quizBrain.dart';
@@ -29,7 +28,10 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
   late Timer timer;
   Color favColor = Colors.white;
   double favScal = 1;
-  final player = AudioPlayer(); // Create a player
+  final player = AudioPlayer();
+  bool counterFinished = false;
+
+  bool showCorrectAnswer = false;
 
   void checkAnswer() {
     if (counter <= 5) {
@@ -103,6 +105,10 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
         counter = 10;
       });
     } else {
+      setState(() {
+        counterFinished = false;
+        showCorrectAnswer = false;
+      });
       counter = 10;
       startTimer();
       setState(() {
@@ -124,6 +130,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
         player.play();
       }
       if (counter == 0 && userChoice == null) {
+        counterFinished = true;
         player.stop();
         timer.cancel();
         setState(() {
@@ -132,6 +139,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
             color: Colors.white,
           ));
         });
+
         // next();
       }
     });
@@ -142,30 +150,52 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
   }
 
   void alertFinished() {
-    Alert(
+    QuickAlert.show(
       context: context,
-      title: 'Your Score',
-      desc: "$score/${quizBrain.getQuestiosNumber()}",
-      closeFunction: () {
+      type: score < (quizBrain.getQuestiosNumber() / 2)
+          ? QuickAlertType.error
+          : QuickAlertType.success,
+      text: 'Your Score is $score/${quizBrain.getQuestiosNumber()}',
+      title: score < (quizBrain.getQuestiosNumber() / 2)
+          ? 'Good Luck!😞'
+          : 'Congratulations! 🎉',
+      confirmBtnText: 'Play Agin',
+      onConfirmBtnTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      onCancelBtnTap: () {
         Navigator.pushNamedAndRemoveUntil(
             context, '/home_screen', (route) => false);
       },
-      buttons: [
-        DialogButton(
-            child: const Text('Finish'),
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/home_screen', (route) => false);
-            }),
-        DialogButton(
-          child: const Text('Play Again'),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ).show();
+      showCancelBtn: true,
+      cancelBtnText: 'Finish',
+      confirmBtnColor: Colors.green,
+    );
+    // Alert(
+    //   context: context,
+    //   title: 'Your Score',
+    //   desc: "$score/${quizBrain.getQuestiosNumber()}",
+    //   closeFunction: () {
+    //     Navigator.pushNamedAndRemoveUntil(
+    //         context, '/home_screen', (route) => false);
+    //   },
+    //   buttons: [
+    //     DialogButton(
+    //         child: const Text('Finish'),
+    //         onPressed: () {
+    //           Navigator.pushNamedAndRemoveUntil(
+    //               context, '/home_screen', (route) => false);
+    //         }),
+    //     DialogButton(
+    //       child: const Text('Play Again'),
+    //       onPressed: () {
+    //         Navigator.pop(context);
+    //         Navigator.pop(context);
+    //       },
+    //     ),
+    //   ],
+    // ).show();
   }
 
   @override
@@ -313,13 +343,15 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: GestureDetector(
-                  onTap: userChoice == null
-                      ? () {
-                          // print("Index:$index");
-                          userChoice = true;
-                          checkAnswer();
-                        }
-                      : null,
+                  onTap: counterFinished
+                      ? null
+                      : userChoice == null
+                          ? () {
+                              // print("Index:$index");
+                              userChoice = true;
+                              checkAnswer();
+                            }
+                          : null,
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2),
                     width: double.infinity,
@@ -334,7 +366,10 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                                     : userChoice == true
                                         ? [kr1, kr2]
                                         : [Colors.white54, Colors.white54]
-                                : [Colors.white, Colors.white],
+                                : showCorrectAnswer &&
+                                        quizBrain.getQuestionAnswer()
+                                    ? [ky1, ky2]
+                                    : [Colors.white, Colors.white],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter),
                         color: Colors.white),
@@ -448,13 +483,16 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: GestureDetector(
-                  onTap: userChoice == null
-                      ? () {
-                          // print("Index:$index");
-                          userChoice = false;
-                          checkAnswer();
-                        }
-                      : null,
+                  // False choice
+                  onTap: counterFinished
+                      ? null
+                      : userChoice == null
+                          ? () {
+                              // print("Index:$index");
+                              userChoice = false;
+                              checkAnswer();
+                            }
+                          : null,
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2),
                     width: double.infinity,
@@ -469,7 +507,10 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                                     : userChoice == false
                                         ? [kr1, kr2]
                                         : [Colors.white54, Colors.white54]
-                                : [Colors.white, Colors.white],
+                                : showCorrectAnswer &&
+                                        !quizBrain.getQuestionAnswer()
+                                    ? [ky1, ky2]
+                                    : [Colors.white, Colors.white],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter),
                         color: Colors.white),
@@ -638,7 +679,11 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {
-                      // showCorrectAnswer=
+                      setState(() {
+                        showCorrectAnswer = true;
+                      });
+
+                      print(showCorrectAnswer);
                     },
                     child: Text(
                       (userChoice == null && counter == 0) ? 'Show Answer' : '',
@@ -658,8 +703,13 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                       next();
                     },
                     child: Text(
-                      userChoice != null && !quizBrain.isFinished()
-                          ? 'Next'
+                      (userChoice != null && !quizBrain.isFinished() ||
+                              userChoice == null && counter == 0)
+                          ? userChoice == null &&
+                                  counter == 0 &&
+                                  quizBrain.isFinished()
+                              ? 'show result'
+                              : 'Next'
                           : '',
                       style: TextStyle(
                           color: Colors.white,
