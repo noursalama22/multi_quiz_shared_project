@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:quickalert/quickalert.dart';
-
 import '../constants.dart';
 import '../modules/true_false/quizBrain.dart';
 import '../widgets/my_outline_btn.dart';
@@ -19,7 +17,6 @@ class TrueFalseQuiz extends StatefulWidget {
 
 class _TrueFalseQuizState extends State<TrueFalseQuiz> {
   QuizBrain quizBrain = QuizBrain();
-  // final player = AudioPlayer(); //
   List<Icon> scoreKeeper = [];
   int score = 0;
   int counter = 10;
@@ -30,7 +27,6 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
   double favScal = 1;
   final player = AudioPlayer();
   bool counterFinished = false;
-
   bool showCorrectAnswer = false;
 
   void checkAnswer() {
@@ -47,12 +43,12 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
         setState(() {
           favColor = Colors.redAccent;
           favScal = 2;
-          Timer(Duration(milliseconds: 300), () {
+          Timer(const Duration(milliseconds: 300), () {
             setState(() {
               favScal = 1;
             });
           });
-          Timer(Duration(milliseconds: 1000), () {
+          Timer(const Duration(milliseconds: 1000), () {
             setState(() {
               favColor = Colors.white;
             });
@@ -81,7 +77,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
     if (quizBrain.isFinished()) {
       cancelTimer();
 
-      Timer(Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 2), () {
         alertFinished();
         setState(() {
           quizBrain.reset();
@@ -134,7 +130,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
         player.stop();
         timer.cancel();
         setState(() {
-          scoreKeeper.add(Icon(
+          scoreKeeper.add(const Icon(
             Icons.question_mark,
             color: Colors.white,
           ));
@@ -172,30 +168,6 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
       cancelBtnText: 'Finish',
       confirmBtnColor: Colors.green,
     );
-    // Alert(
-    //   context: context,
-    //   title: 'Your Score',
-    //   desc: "$score/${quizBrain.getQuestiosNumber()}",
-    //   closeFunction: () {
-    //     Navigator.pushNamedAndRemoveUntil(
-    //         context, '/home_screen', (route) => false);
-    //   },
-    //   buttons: [
-    //     DialogButton(
-    //         child: const Text('Finish'),
-    //         onPressed: () {
-    //           Navigator.pushNamedAndRemoveUntil(
-    //               context, '/home_screen', (route) => false);
-    //         }),
-    //     DialogButton(
-    //       child: const Text('Play Again'),
-    //       onPressed: () {
-    //         Navigator.pop(context);
-    //         Navigator.pop(context);
-    //       },
-    //     ),
-    //   ],
-    // ).show();
   }
 
   @override
@@ -236,9 +208,6 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                       iconColor: Colors.white,
                       bColor: Colors.white,
                       function: () {
-                        // Navigator.pop(context);
-                        // Navigator.pop(context);
-
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -274,19 +243,19 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                   ),
                   OutlinedButton(
                     onPressed: () {},
-                    child: AnimatedScale(
-                      scale: favScal,
-                      duration: Duration(milliseconds: 500),
-                      child: Icon(
-                        Icons.favorite,
-                        color: favColor,
-                      ),
-                    ),
                     style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
                         side: const BorderSide(color: Colors.white)),
+                    child: AnimatedScale(
+                      scale: favScal,
+                      duration: const Duration(milliseconds: 500),
+                      child: Icon(
+                        Icons.favorite,
+                        color: favColor,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -324,20 +293,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: Center(
-              //     child: Text(
-              //       quizBrain.getQuestionText(),
-              //       textAlign: TextAlign.center,
-              //       style: const TextStyle(
-              //         fontSize: 32.0,
-              //         color: Colors.white,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
@@ -412,73 +368,6 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                     ),
                   ),
                 ),
-                // child: ElevatedButton(
-                //   onPressed: userChoice == null
-                //       ? () {
-                //           print("Index:$index");
-                //           userChoice = index;
-                //           checkAnswer();
-                //         }
-                //       : null,
-                //   style: ElevatedButton.styleFrom(
-                //     minimumSize: Size(0, 60),
-                //     disabledBackgroundColor: userChoice != null
-                //         ? (isCorrect! && userChoice == index)
-                //             ? Colors.lightGreen
-                //             : userChoice == index
-                //                 ? Colors.red
-                //                 : Colors.white54
-                //         : Colors.white,
-                //     backgroundColor: userChoice != null
-                //         ? (isCorrect! && userChoice == index)
-                //             ? Colors.lightGreen
-                //             : userChoice == index
-                //                 ? Colors.red
-                //                 : Colors.white
-                //         : Colors.white,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(15),
-                //     ),
-                //     padding: const EdgeInsets.symmetric(
-                //         vertical: 12, horizontal: 16),
-                //   ),
-                //   child: Row(
-                //     children: [
-                //       const SizedBox(
-                //         width: 24,
-                //       ),
-                //       Expanded(
-                //         child: Center(
-                //           child: Text(
-                //             quizBrain.getOptions()[index],
-                //             style: TextStyle(
-                //                 color: userChoice != null
-                //                     ? userChoice == index
-                //                         ? Colors.white
-                //                         : kL2
-                //                     : kL2,
-                //                 fontWeight: FontWeight.w500,
-                //                 fontSize: 20),
-                //           ),
-                //         ),
-                //       ),
-                //       Icon(
-                //         userChoice == null
-                //             ? null
-                //             : isCorrect! && userChoice == index
-                //                 ? Icons.check
-                //                 : userChoice == index
-                //                     ? Icons.close
-                //                     : null,
-                //         color: userChoice != null
-                //             ? userChoice == index
-                //                 ? Colors.white
-                //                 : null
-                //             : null,
-                //       ),
-                //     ],
-                //   ),
-                // ),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
@@ -553,118 +442,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                     ),
                   ),
                 ),
-                // child: ElevatedButton(
-                //   onPressed: userChoice == null
-                //       ? () {
-                //           print("Index:$index");
-                //           userChoice = index;
-                //           checkAnswer();
-                //         }
-                //       : null,
-                //   style: ElevatedButton.styleFrom(
-                //     minimumSize: Size(0, 60),
-                //     disabledBackgroundColor: userChoice != null
-                //         ? (isCorrect! && userChoice == index)
-                //             ? Colors.lightGreen
-                //             : userChoice == index
-                //                 ? Colors.red
-                //                 : Colors.white54
-                //         : Colors.white,
-                //     backgroundColor: userChoice != null
-                //         ? (isCorrect! && userChoice == index)
-                //             ? Colors.lightGreen
-                //             : userChoice == index
-                //                 ? Colors.red
-                //                 : Colors.white
-                //         : Colors.white,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(15),
-                //     ),
-                //     padding: const EdgeInsets.symmetric(
-                //         vertical: 12, horizontal: 16),
-                //   ),
-                //   child: Row(
-                //     children: [
-                //       const SizedBox(
-                //         width: 24,
-                //       ),
-                //       Expanded(
-                //         child: Center(
-                //           child: Text(
-                //             quizBrain.getOptions()[index],
-                //             style: TextStyle(
-                //                 color: userChoice != null
-                //                     ? userChoice == index
-                //                         ? Colors.white
-                //                         : kL2
-                //                     : kL2,
-                //                 fontWeight: FontWeight.w500,
-                //                 fontSize: 20),
-                //           ),
-                //         ),
-                //       ),
-                //       Icon(
-                //         userChoice == null
-                //             ? null
-                //             : isCorrect! && userChoice == index
-                //                 ? Icons.check
-                //                 : userChoice == index
-                //                     ? Icons.close
-                //                     : null,
-                //         color: userChoice != null
-                //             ? userChoice == index
-                //                 ? Colors.white
-                //                 : null
-                //             : null,
-                //       ),
-                //     ],
-                //   ),
-                // ),
               ),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(15.0),
-              //     child: ElevatedButton(
-              //       style: const ButtonStyle(
-              //         backgroundColor: MaterialStatePropertyAll(Colors.green),
-              //       ),
-              //       child: const Text(
-              //         'True',
-              //         style: TextStyle(
-              //           color: Colors.white,
-              //           fontSize: 20.0,
-              //         ),
-              //       ),
-              //       onPressed: () {
-              //         //The user picked true.
-              //         userChoice = true;
-              //         checkAnswer();
-              //       },
-              //     ),
-              //   ),
-              // ),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(15.0),
-              //     child: ElevatedButton(
-              //       style: const ButtonStyle().copyWith(
-              //         backgroundColor: MaterialStatePropertyAll(Colors.red),
-              //       ),
-              //       child: const Text(
-              //         'False',
-              //         style: TextStyle(
-              //           fontSize: 20.0,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //       onPressed: () {
-              //         //The user picked false.
-              //         userChoice = false;
-              //         checkAnswer();
-              //       },
-              //     ),
-              //   ),
-              // ),
               Wrap(
                 children: scoreKeeper,
               ),
@@ -674,20 +452,18 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                 children: [
                   TextButton(
                     style: TextButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 12),
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {
                       setState(() {
                         showCorrectAnswer = true;
                       });
-
-                      print(showCorrectAnswer);
                     },
                     child: Text(
                       (userChoice == null && counter == 0) ? 'Show Answer' : '',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           decoration: TextDecoration.underline),
@@ -711,7 +487,7 @@ class _TrueFalseQuizState extends State<TrueFalseQuiz> {
                               ? 'show result'
                               : 'Next'
                           : '',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           decoration: TextDecoration.underline),

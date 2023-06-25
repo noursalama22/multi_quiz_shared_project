@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../constants.dart';
 
 class LaunchScreen extends StatefulWidget {
@@ -40,48 +39,13 @@ class _LaunchScreenState extends State<LaunchScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(60.0),
+                    const Padding(
+                      padding: EdgeInsets.all(60.0),
                       child: Image(
                         image: AssetImage('assets/images/img.png'),
                         fit: BoxFit.contain,
                       ),
                     ),
-                    // const Padding(
-                    //   padding: EdgeInsets.only(top: 30.0),
-                    //   child: Text(
-                    //     'Game',
-                    //     style: TextStyle(
-                    //         shadows: [
-                    //           Shadow(
-                    //               color: Colors.white38,
-                    //               offset: Offset(1, 5),
-                    //               blurRadius: 5)
-                    //         ],
-                    //         // decorationStyle: TextDecorationStyle.double,
-                    //         // decoration: TextDecoration.underline,
-                    //         // decorationColor: kL2,
-                    //         fontSize: 60,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: Colors.white),
-                    //   ),
-                    // ),
-                    // const Text(
-                    //   'Quiz',
-                    //   style: TextStyle(
-                    //       shadows: [
-                    //         Shadow(
-                    //             color: Colors.white38,
-                    //             offset: Offset(1, 5),
-                    //             blurRadius: 5)
-                    //       ],
-                    //       // decorationStyle: TextDecorationStyle.double,
-                    //       // decoration: TextDecoration.underline,
-                    //       // decorationColor: kL2,
-                    //       fontSize: 60,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: Colors.white),
-                    // ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -102,7 +66,6 @@ class _LaunchScreenState extends State<LaunchScreen> {
                           style: TextStyle(
                               color: Colors.black87,
                               fontWeight: FontWeight.bold,
-                              // fontFamily: 'Sf-Pro-Text',
                               fontSize: 24),
                         )),
                   ],

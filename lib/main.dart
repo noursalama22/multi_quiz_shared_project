@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
         '/home_screen': (context) => const HomePage(),
         '/level1': (context) => const TrueFalseQuiz(),
         '/level2': (context) => const MultiQScreen(),
-        // '/description_screen': (context) => LevelDescription(level: level, onpress_btn: onpress_btn),
       },
     );
   }

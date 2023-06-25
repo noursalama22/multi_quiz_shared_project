@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:multi_quiz_s_t_tt9/constants.dart';
 import 'package:multi_quiz_s_t_tt9/pages/level_describtion.dart';
 import 'package:multi_quiz_s_t_tt9/widgets/my_outline_btn.dart';
-
 import '../modules/level_Info.dart';
 import '../widgets/my_level_widget.dart';
 
@@ -34,14 +33,6 @@ class _HomePageState extends State<HomePage> {
         image: "assets/images/ballon-s.png",
         description:
             "Do you feel confident? Here you\'ll challenge one of our most difficult muliple choice questions!"),
-    // Level(
-    //     title: "Multiple choice",
-    //     subtitle: "Level 2",
-    //     colors: [kL2, kL22],
-    //     routeName: '/level2',
-    //     icon: Icons.play_arrow,
-    //     image: "assets/images/ballon-s.png",
-    //     description: "multible choice"),
   ];
 
   @override
@@ -57,7 +48,7 @@ class _HomePageState extends State<HomePage> {
             bColor: kGreyFont.withOpacity(0.4),
             iconColor: kBlueIcon,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           MYOutlineBtn(
@@ -66,7 +57,7 @@ class _HomePageState extends State<HomePage> {
             bColor: kGreyFont.withOpacity(0.4),
             iconColor: kBlueIcon,
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
         ],
